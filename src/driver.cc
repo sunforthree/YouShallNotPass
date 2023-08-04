@@ -64,8 +64,10 @@ void packet_handler_in(u_char* parser, const struct pcap_pkthdr* header, const u
 
   /* Get back parser. */
   parser = (u_char*)internal_parser;
+  #ifndef NDEBUG
   /* Function show will print pkt info by layers. */
   show(internal_parser);
+  #endif
 }
 
 void packet_handler_out(u_char* parser, const struct pcap_pkthdr* header, const u_char* pkt_data) {  
@@ -85,8 +87,10 @@ void packet_handler_out(u_char* parser, const struct pcap_pkthdr* header, const 
 
   /* Get back parser. */
   parser = (u_char*)internal_parser;
+  #ifndef NDEBUG
   /* Function show will print pkt info by layers. */
   show(internal_parser);
+  #endif
 }
 
 }
