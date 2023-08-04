@@ -18,7 +18,7 @@ else()
 endif()
 
 set(SRC
-    src/lpcap.cc
+    src/driver.cc
     src/parser.cc)
 
 add_library(PParser STATIC ${SRC})
