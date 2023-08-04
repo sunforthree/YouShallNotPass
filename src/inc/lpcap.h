@@ -39,13 +39,10 @@ void end_pcap(pcap_t* handle);
 // pass a function ptr to it do the real handle things.
 // 'pcap_handler' parameter is as follows: 
 // (u_char *, const struct pcap_pkthdr *, const u_char *)
-void packet_process(pcap_t* handle, struct pkt_parser* parser);
+void process_packet(pcap_t* handle, struct pkt_parser* parser);
 
 // Default packet handler.
 void packet_handler(u_char* user_Data, const struct pcap_pkthdr* header, const u_char* pkt_data);
-
-// Parse packet data, save values in parser.
-void packet_parse(struct pkt_parser* parser, const struct pcap_pkthdr* header, const u_char* pkt_data);
 
 } /* namespace ants */
 

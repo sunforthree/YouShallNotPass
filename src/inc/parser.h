@@ -12,6 +12,8 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <arpa/inet.h>
+#include <string.h>
+#include <pcap.h>
 
 // C++ infterface to parse raw data.
 // Defined sorts of struct parsers save protocol data.
@@ -109,6 +111,9 @@ char* tcp_ftoa(uint8_t flag);
 
 // Clean proto_flag.
 void clean_flags(struct proto_flag &flags);
+
+/* Parse packet, assume packet is in libpcap format. */
+void parse_packet(struct pkt_parser* parser, const struct pcap_pkthdr* header, const u_char* pkt_data);
 
 } /* namespace ants */
 
