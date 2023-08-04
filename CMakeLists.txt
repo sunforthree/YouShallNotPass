@@ -17,13 +17,16 @@ else()
     message(FATAL_ERROR "Cannot find lipcap download from https://www.tcpdump.org/")
 endif()
 
+# CMake's cross-platform threading library
+find_package(Threads REQUIRED)
+
 set(SRC
     src/driver.cc
     src/parser.cc)
 
 add_library(PParser STATIC ${SRC})
 target_compile_features(PParser PRIVATE cxx_std_11)
-target_link_libraries(PParser PRIVATE libpcap)
+target_link_libraries(PParser PRIVATE libpcap Threads::Threads)
 
 # Build main target.
 add_executable(main main.cc)

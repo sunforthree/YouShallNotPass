@@ -3,8 +3,8 @@
 namespace ants {
 
 // error buffer define.
-char errBuf[PCAP_ERRBUF_SIZE];
-int err;
+static char errBuf[PCAP_ERRBUF_SIZE];
+static int err;
 
 pcap_t* init_pcap(PcapType type, const char* location) {
   pcap_t* handle;
@@ -47,10 +47,15 @@ void process_packet(pcap_t* handle, struct pkt_parser* parser, pcap_handler hand
   }
 }
 
-void packet_handler(u_char* parser, const struct pcap_pkthdr* header, const u_char* pkt_data) {  
+void packet_handler_in(u_char* parser, const struct pcap_pkthdr* header, const u_char* pkt_data) {  
+  #ifndef NDEBUG
+  printf("Receiving an inbound packet, preparing to parse it:\n");
+  #endif
+
   u_int len = header->len;
   if (len < sizeof(struct ether_header)) {
-    fprintf(stderr, "incomplated packet\n");
+    /* TODO: consider moving this to syslog */
+    fprintf(stderr, "incompleted packet\n");
     return;
   }
 
@@ -59,8 +64,33 @@ void packet_handler(u_char* parser, const struct pcap_pkthdr* header, const u_ch
 
   /* Get back parser. */
   parser = (u_char*)internal_parser;
+  #ifndef NDEBUG
   /* Function show will print pkt info by layers. */
   show(internal_parser);
+  #endif
+}
+
+void packet_handler_out(u_char* parser, const struct pcap_pkthdr* header, const u_char* pkt_data) {  
+  #ifndef NDEBUG
+  printf("Receiving an outbound packet, preparing to parse it:\n");
+  #endif
+  
+  u_int len = header->len;
+  if (len < sizeof(struct ether_header)) {
+    /* TODO: consider moving this to syslog */
+    fprintf(stderr, "incompleted packet\n");
+    return;
+  }
+
+  struct pkt_parser* internal_parser = (struct pkt_parser*)parser;
+  parse_packet(internal_parser, header, pkt_data);
+
+  /* Get back parser. */
+  parser = (u_char*)internal_parser;
+  #ifndef NDEBUG
+  /* Function show will print pkt info by layers. */
+  show(internal_parser);
+  #endif
 }
 
 }
