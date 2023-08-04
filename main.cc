@@ -13,7 +13,7 @@ struct main_args
 static void *process_packet_wrapper(void *args)
 {
   main_args *a = reinterpret_cast<main_args *>(args);
-  process_packet(a->handle, a->parser);
+  process_packet(a->handle, a->parser, a->handler);
   return NULL;
 }
 
@@ -37,8 +37,8 @@ int main(int argc, char** argv)
   parser_out = init_parser();
 
   pthread_t tidx_in, tidx_out;
-  main_args marg_in = {.handle = handle_in, .parser = parser_in};
-  main_args marg_out = {.handle = handle_out, .parser = parser_out};
+  main_args marg_in = {.handle = handle_in, .parser = parser_in, .handler = packet_handler_in};
+  main_args marg_out = {.handle = handle_out, .parser = parser_out, .handler = packet_handler_out};
 
   if(pthread_create(&tidx_in, NULL, process_packet_wrapper, (void *)&marg_in)) {
     fprintf(stderr, "Cannot create thread for inbound traffic\n");

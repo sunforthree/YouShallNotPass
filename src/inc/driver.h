@@ -35,14 +35,17 @@ pcap_t* init_pcap(PcapType type, const char* location);
 // If handle not nullptr, close it.
 void end_pcap(pcap_t* handle);
 
-// Default packet handler.
-void packet_handler(u_char* user_Data, const struct pcap_pkthdr* header, const u_char* pkt_data);
+/* Packet handler for processing inbound (printer -> program)
+ * and outbound (program -> higher level router) traffic
+ */
+void packet_handler_in(u_char* user_Data, const struct pcap_pkthdr* header, const u_char* pkt_data);
+void packet_handler_out(u_char* user_Data, const struct pcap_pkthdr* header, const u_char* pkt_data);
 
 // Main function, process packet here,
 // pass a function ptr to it do the real handle things.
 // 'pcap_handler' parameter is as follows: 
 // (u_char *, const struct pcap_pkthdr *, const u_char *)
-void process_packet(pcap_t* handle, struct pkt_parser* parser, pcap_handler handler=packet_handler);
+void process_packet(pcap_t* handle, struct pkt_parser* parser, pcap_handler handler);
 
 } /* namespace ants */
 
