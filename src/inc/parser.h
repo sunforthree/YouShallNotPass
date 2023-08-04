@@ -76,7 +76,20 @@ struct udp_parser {
 };
 
 struct dhcp_parser {
-
+  uint8_t     dhcp_op;
+  uint8_t     dhcp_htype;     // 1: ethernet
+  uint8_t     dhcp_hlen;      // 6: ethernet address length
+  uint8_t     dhcp_hops;
+  uint32_t    dhcp_xid;
+  uint16_t    dhcp_secs;
+  uint16_t    dhcp_flags;
+  struct  in_addr dhcp_ciaddr;    // Client IP address
+  struct  in_addr dhcp_yiaddr;    // Your IP address
+  struct  in_addr dhcp_siaddr;    // Server IP address
+  struct  in_addr dhcp_giaddr;    // GW IP address
+  uint8_t     dhcp_chaddr[16];    // Client HW address
+  uint8_t     dhcp_legacy[192];   // For legacy bootps compatibility
+  uint32_t    dhcp_magic_cookie;  // Magic Cookie
 };
 
 struct pkt_parser {

@@ -9,6 +9,7 @@ struct pkt_parser* init_parser() {
   // parser->ip = new struct ip_parser;
   parser->tcp = new struct tcp_parser;
   parser->udp = new struct udp_parser;
+  parser->dhcp = new struct dhcp_parser;
 
   return parser;
 }
@@ -24,6 +25,8 @@ void end_parser(struct pkt_parser* parser) {
     delete parser->tcp;
   if (parser != nullptr && parser->udp != nullptr)
     delete parser->udp;
+  // if (parser != nullptr && parser->dhcp != nullptr)
+  //   delete parser->dhcp;
   if (parser != nullptr)
     delete parser;
 }
@@ -68,6 +71,24 @@ void show(struct pkt_parser* parser) {
     printf("   dport= %d \n", parser->udp->dport);
     printf("   len= %d \n", parser->udp->len);
     printf("   checksum= 0x%02x \n", parser->udp->checksum);
+  }
+  if (parser->flags.dhcp && parser->dhcp != nullptr) {
+    printf("###[ DHCP ]###\n");
+    printf( "   DHCP OP: %02X\n", parser->dhcp -> dhcp_op );
+    printf( "   DHCP HTYPE: %02X\n", parser->dhcp -> dhcp_htype );
+    printf( "   DHCP HLEN: %02X\n", parser->dhcp -> dhcp_hlen );
+    printf( "   DHCP HOPS: %02X\n", parser->dhcp -> dhcp_hops );
+    printf( "   DHCP XID: %08X\n", parser->dhcp -> dhcp_xid );
+    printf( "   DHCP SECS: %04X\n", parser->dhcp -> dhcp_secs );
+    printf( "   DHCP FLAGS: %04X\n", parser->dhcp -> dhcp_flags );
+    printf( "   DHCP CIADDR: %s\n", inet_ntoa( parser->dhcp -> dhcp_ciaddr ) );
+    printf( "   DHCP YIADDR: %s\n", inet_ntoa( parser->dhcp -> dhcp_yiaddr ) );
+    printf( "   DHCP SIADDR: %s\n", inet_ntoa( parser->dhcp -> dhcp_siaddr ) );
+    printf( "   DHCP GIADDR: %s\n", inet_ntoa( parser->dhcp -> dhcp_giaddr ) );
+    printf( "   DHCP CHADDR: %02X:%02X:%02X:%02X:%02X:%02X\n",
+            parser->dhcp -> dhcp_chaddr[0], parser->dhcp -> dhcp_chaddr[1], parser->dhcp -> dhcp_chaddr[2],
+            parser->dhcp -> dhcp_chaddr[3], parser->dhcp -> dhcp_chaddr[4], parser->dhcp -> dhcp_chaddr[5] );
+    printf( "   DHCP Magic Cookie: %08X\n", parser->dhcp -> dhcp_magic_cookie );
   }
 
   printf("\n");
@@ -197,7 +218,7 @@ void parse_packet(struct pkt_parser* parser, const struct pcap_pkthdr* header, c
     else if (u_char(ip->ip_p) == IPPROTO_UDP) {
       parser->flags.udp = true;
       struct udphdr* udp_header = (struct udphdr*)(pkt_data + ether_header_len + ip_header_len);
-
+      len -= 8;
 
       struct udp_parser* udp = parser->udp;
       udp->sport = ntohs(udp_header->uh_sport);
@@ -205,6 +226,11 @@ void parse_packet(struct pkt_parser* parser, const struct pcap_pkthdr* header, c
       udp->len = ntohs(udp_header->len);
       udp->checksum = ntohs(udp_header->check);
       /* End of udp header. */
+
+      if ((udp->dport == 68 && udp->sport == 67) || (udp->dport == 67 && udp->sport == 68)) {
+        parser->flags.dhcp = true;
+        parser->dhcp = (struct dhcp_parser*)(pkt_data + ether_header_len + ip_header_len + 8);
+      }
     }
   }
 }
