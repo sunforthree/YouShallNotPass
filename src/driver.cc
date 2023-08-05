@@ -3,6 +3,8 @@
 
 namespace ants {
 
+pcap_t *handle_in, *handle_out;
+
 // error buffer define.
 static char errBuf[PCAP_ERRBUF_SIZE];
 static int err;
