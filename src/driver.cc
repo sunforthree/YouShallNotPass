@@ -1,6 +1,9 @@
 #include "inc/driver.h"
+#include "inc/stack.h"
 
 namespace ants {
+
+pcap_t *handle_in, *handle_out;
 
 // error buffer define.
 static char errBuf[PCAP_ERRBUF_SIZE];
@@ -64,6 +67,16 @@ void packet_handler_in(u_char* parser, const struct pcap_pkthdr* header, const u
 
   /* Get back parser. */
   parser = (u_char*)internal_parser;
+  
+  /* This is a very tricky step: 
+   * We don't want the kernel to route the packet from inbound to outbound --
+   * Some of the packets even do not hav IP!
+   * So we connect our cables here, allowing the inbound thread to send packets
+   * directly from outbound interface, which is directly connected with outer network,
+   * and vise versa for outbound interface.
+   */
+  stack_in(internal_parser, handle_out, header, pkt_data);
+
   #ifndef NDEBUG
   /* Function show will print pkt info by layers. */
   show(internal_parser);
@@ -87,6 +100,8 @@ void packet_handler_out(u_char* parser, const struct pcap_pkthdr* header, const 
 
   /* Get back parser. */
   parser = (u_char*)internal_parser;
+  stack_out(internal_parser, handle_in, header, pkt_data);
+
   #ifndef NDEBUG
   /* Function show will print pkt info by layers. */
   show(internal_parser);

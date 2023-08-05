@@ -25,8 +25,6 @@ int main(int argc, char** argv)
   /* TODO: encapsulate this process to reduce code duplication */
   std::string inbound = "ens3f0";
   std::string outbound = "ens3f1";
-  pcap_t* handle_in;
-  pcap_t* handle_out;
 
   struct pkt_parser* parser_in;
   struct pkt_parser* parser_out;

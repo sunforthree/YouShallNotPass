@@ -92,6 +92,23 @@ struct dhcp_parser {
   uint32_t    dhcp_magic_cookie;  // Magic Cookie
 };
 
+/* Since DHCP lack a header defining all fields, we have to do this ourselves */
+enum {
+  DHCP_DISCOVER = 1,
+  DHCP_OFFER,
+  DHCP_REQUEST,
+  DHCP_DECLINE,
+  DHCP_ACK,
+  DHCP_NAK,
+  DHCP_RELEASE,
+  DHCP_INFORM,
+  DHCP_FORCE_RENEW,
+  DHCP_LEASE_QUERY,
+  DHCP_LEASE_UNASSIGNED,
+  DHCP_LEASE_UNKNOWN,
+  DHCP_LEASE_ACTIVE 
+};
+
 struct pkt_parser {
   struct proto_flag flags;
   struct ether_parser* ether;

@@ -22,7 +22,8 @@ find_package(Threads REQUIRED)
 
 set(SRC
     src/driver.cc
-    src/parser.cc)
+    src/parser.cc
+    src/stack.cc)
 
 add_library(PParser STATIC ${SRC})
 target_compile_features(PParser PRIVATE cxx_std_11)
